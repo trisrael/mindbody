@@ -2,6 +2,7 @@
 require 'handsoap'
 
 module MindbodyAPI
+	NS = "_5"
 
 	# Gets the hostname for the Api environment.
 	def get_api_hostname
@@ -11,39 +12,56 @@ module MindbodyAPI
 	def get_api_namespace
 		"http://clients.mindbodyonline.com/api/0_5"
 	end
+end
 
+module NamespaceHelper
+
+	#Append a keyword with "_5" namespace
+	def ns(str)
+		val = MindbodyAPI::NS + ":" + str
+		puts val
+		val
+	end
 
 end
 
 #MB Request Objects
 class SourceCredentials
+	include NamespaceHelper
 
 	attr_accessor :source_name, :password, :site_ids
 	  
 	def initialize(source_name, password, site_ids)
 		 @source_name = source_name
 		 @password = password
-		 @site_ids = site_ids
+
+		begin
+			site_ids.count #Is this an array?
+		rescue
+			site_ids = [site_ids]
+		end		
+				
+		@site_ids = site_ids
 	end
 
 	#Takes members of class and returns XML versions with each as sibling nodes to one another
 	#Example:
 	#	<ns:node1>text</ns:node1><ns:node2>text</ns:node2>
 	def build_soap!(msg)
-		msg.add "SourceCredentials" do |node|
-			node.add "SourceName", @username
-			node.add "Password", @password
-			node.add "siteIDs" do |inner_node|
+		msg.add ns("SourceCredentials") do |node|
+			node.add ns("SourceName"), @source_name
+			node.add ns("Password"), @password
+			node.add ns("SiteIDs") do |inner_node|
 				@site_ids.each do |i|
-					inner_node.add "int", i
+					inner_node.add ns("int"), i
 				end
 			end		
 		end
 	end
-
 end
 
 class UserCredentials
+	include NamespaceHelper
 	attr_accessor :username, :password, :site_ids
 	  
 	def initialize(username, password, site_ids)
@@ -51,9 +69,9 @@ class UserCredentials
 		@password = password	
 
 		begin
-			site_ids.send(:count) #Is this an array?
+			site_ids.count #Is this an array?
 		rescue
-			site_ids = site_ids = [site_ids]
+			site_ids = [site_ids]
 		end		
 				
 		@site_ids = site_ids
@@ -63,12 +81,12 @@ class UserCredentials
 	#Example:
 	#	<ns:node1>text</ns:node1><ns:node2>text</ns:node2>
 	def build_soap!(msg)
-		msg.add "UserCredentials"	do |node|
-			node.add "Username", @username
-			node.add "Sassword", @password
-			node.add "SiteIDs" do |inner_node|
+		msg.add ns("UserCredentials") do |node|
+			node.add ns("Username"), @username
+			node.add ns("Password"), @password
+			node.add ns("SiteIDs") do |inner_node|
 				@site_ids.each do |i|
-					inner_node.add "int", i
+					inner_node.add ns("int"), i
 				end
 			end		
 		end
@@ -87,35 +105,34 @@ end
 #in the SOAP XML to be transmitted to the Mindbody server
 class MBService < Handsoap::Service
 	extend MindbodyAPI
+	include NamespaceHelper
 
 	#Member variables 
-	attr_accessor :xms_ns, :sourceCredentials, :userCredentials
+	attr_accessor :sourceCredentials, :userCredentials
 
- 	on_create_document do |doc|
-    	doc.alias @xml_ns, GetApiNamespace()
-	end
 
 	#You can store a set of default SourceCredentials in the object if you are using the 
 	#same ones multiple times.
 	#@param SourceCredentials $credentials
-	def initialize(defaultCreds = null, defaultUserCreds = null, xml_ns)
+	def initialize(defaultCreds = nil, defaultUserCreds = nil)
 		@sourceCredentials = defaultCreds;
 		@userCredentials = defaultUserCreds;
-		@xml_ns = xml_ns
 	end
 	
 	#Invoke the @param service_name, name of SOAP service to be called
 	#including the sourceCredentials and userCredentials, then the method yields 	
 	def invoke_with_credentials(service_name)
-		response = invoke(service_name) do |msg|
-			sourceCredentials.build_soap!(msg) if sourceCredentials
-			userCredentials.build_soap!(msg) if userCredentials
-			yield(msg) #Allow block to add additional entries into SOAP request
+		response = invoke(ns(service_name), :soap_action => MBService.get_api_namespace  + "/" + service_name) do |msg|
+
+			msg.add ns("Request") do |request|
+				sourceCredentials.build_soap!(request) if sourceCredentials
+				userCredentials.build_soap!(request) if userCredentials
+				yield(request) #Allow block to add additional entries into SOAP request
+				puts msg.to_s
+			end
+
 		end
+		return response
 	end
 
 end
-	
-
-
-

@@ -1,7 +1,18 @@
 class MBClassService < MBService
-	endpoint :version => 1, :uri => self.get_api_namespace() + "/ClassService.asmx?wsdl" 
+	extend MindbodyAPI
 
-	
+	endpoint :version => 1, :uri => "http://clients.mindbodyonline.com/api/0_5/ClassService.asmx"
+
+	def get_class_service(service_name, pageSize = nil, currentPageIndex = nil, xmlDetail = XMLDetail::Bare, fields = nil)
+		response = invoke_with_credentials(service_name) do |msg|
+			msg.add ns("CurrentPageIndex"), currentPageIndex if currentPageIndex
+			msg.add ns("PageSize"), pageSize if pageSize
+			msg.add ns("XMLDetail"), xmlDetail if xmlDetail
+			msg.add ns("Fields"), fields if fields
+		end
+		return response
+	end
+
 	 # Returns the raw result of the MINDBODY SOAP call.
 	 # @param pageSize
 	 #@param currentPage
@@ -9,19 +20,14 @@ class MBClassService < MBService
 	 # @param fields
 	 # @param credentials A source credentials object to use with this call
 	 # @return object The raw result of the SOAP call
-	
-	def getClasses(classDescriptionIDs, classIDs, staffIDs, startDate, endDate, clientID = nil, pageSize = nil, currentPage = nil, xmlDetail = XMLDetail::Full, fields = nil,  credentials = nil)
-
-		response = invoke_with_credentials("GetClasses") do |msg|
-			msg.add 'ClassDescriptionIDs', classDescriptionIDs if classDescriptionIDs
-			msg.add 'ClassIDs', classIDs if classIDs
-			msg.add 'StaffIDs', staffIDs if staffIDs
-			msg.add 'StartDateTime', startDate if startDate
-			msg.add 'endDateTime', endDate if endDate
-			msg.add 'ClientID', clientID if clientID
-		end
-
-		return response
+	def get_classes(pageSize = 10, currentPageIndex = 0, xmlDetail = XMLDetail::Bare, fields = nil)
+		return get_class_service("GetClasses", pageSize, currentPageIndex, xmlDetail, fields)
 	end
+
+	def get_class_schedules(pageSize = 10, currentPageIndex = 0, xmlDetail = XMLDetail::Bare, fields =nil)
+		return get_class_service("GetClassSchedules", pageSize, currentPageIndex, xmlDetail, fields)		
+	end
+	
+
 end
 
