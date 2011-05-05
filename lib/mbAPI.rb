@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 #File contains all the soap references we need to communicate with the MINDBODY V0.5 API using Ruby.
 require 'handsoap'
 
@@ -109,7 +111,7 @@ class MBService < Handsoap::Service
 
 	#Member variables 
 	attr_accessor :sourceCredentials, :userCredentials
-
+	
 
 	#You can store a set of default SourceCredentials in the object if you are using the 
 	#same ones multiple times.
@@ -121,17 +123,29 @@ class MBService < Handsoap::Service
 	
 	#Invoke the @param service_name, name of SOAP service to be called
 	#including the sourceCredentials and userCredentials, then the method yields 	
-	def invoke_with_credentials(service_name)
+	def invoke_with_credentials(service_name, options)
 		response = invoke(ns(service_name), :soap_action => MBService.get_api_namespace  + "/" + service_name) do |msg|
 
 			msg.add ns("Request") do |request|
 				sourceCredentials.build_soap!(request) if sourceCredentials
 				userCredentials.build_soap!(request) if userCredentials
-				yield(request) #Allow block to add additional entries into SOAP request
+				request.add ns("CurrentPageIndex"), options[:current_page] || 0
+				request.add ns("PageSize"), options[:current_page] || 0
+				request.add ns("XMLDetail"), options[:xml_detail] || XMLDetail::Bare
+				request.add ns("Fields"), options[:fields] if options[:fields]
+				#yield(request) #Allow block to add additional entries into SOAP request
 				puts msg.to_s
 			end
 
 		end
+		response.force_encoding("UTF-8");
+		return response
+	end
+
+	#When no specialty XML needs to be specified into the 'Request' node, this simple method
+	#allows a service name to be specified and calls upon the service referenced 
+	def get_service(service_name, options = {})
+		response = invoke_with_credentials(service_name, options)
 		return response
 	end
 

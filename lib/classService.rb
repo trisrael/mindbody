@@ -1,33 +1,25 @@
+# -*- coding: utf-8 -*-
 class MBClassService < MBService
 	extend MindbodyAPI
 
+	on_create_document do |doc|
+    	doc.alias MindbodyAPI::NS, MBClassService.get_api_namespace
+	end
+
 	endpoint :version => 1, :uri => "http://clients.mindbodyonline.com/api/0_5/ClassService.asmx"
 
-	def get_class_service(service_name, pageSize = nil, currentPageIndex = nil, xmlDetail = XMLDetail::Bare, fields = nil)
-		response = invoke_with_credentials(service_name) do |msg|
-			msg.add ns("CurrentPageIndex"), currentPageIndex if currentPageIndex
-			msg.add ns("PageSize"), pageSize if pageSize
-			msg.add ns("XMLDetail"), xmlDetail if xmlDetail
-			msg.add ns("Fields"), fields if fields
-		end
-		return response
+	def get_classes(options = {})
+		puts options
+		return get_service("GetClasses", options)
 	end
 
-	 # Returns the raw result of the MINDBODY SOAP call.
-	 # @param pageSize
-	 #@param currentPage
-	 # @param xmlDetail
-	 # @param fields
-	 # @param credentials A source credentials object to use with this call
-	 # @return object The raw result of the SOAP call
-	def get_classes(pageSize = 10, currentPageIndex = 0, xmlDetail = XMLDetail::Bare, fields = nil)
-		return get_class_service("GetClasses", pageSize, currentPageIndex, xmlDetail, fields)
+	def get_class_schedules(options = {})
+		return get_service("GetClassSchedules", options)		
 	end
 
-	def get_class_schedules(pageSize = 10, currentPageIndex = 0, xmlDetail = XMLDetail::Bare, fields =nil)
-		return get_class_service("GetClassSchedules", pageSize, currentPageIndex, xmlDetail, fields)		
+	def get_class_descriptions(options = {})
+		return get_service("GetClassDescriptions", options)
 	end
-	
 
 end
 
