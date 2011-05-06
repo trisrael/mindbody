@@ -7,7 +7,7 @@ class Credentials
 	end
 	  
 	def initialize(name, password, ids)
-		 @name = source_name
+		 @name = name
 		 @password = password
 
 		begin
