@@ -1,11 +1,42 @@
 require 'savon'
-class MBService
-	extend MBMeta
-	#Sets up the service WSDL endpoint given a Mindbody service name
-	def self.service(service_name)
-		@@endpoint = self.wsdl_url(service_name)
+
+module MBServiceMixin
+
+	class << self
+		    def included(base)
+			     base.extend ClassMethods
+				 base.extend MBMeta
+			end
+    end	
+
+
+	module ClassMethods
+		#Sets up the service WSDL endpoint given a Mindbody service name
+		def service(service_name)
+			@endpoint = self.wsdl_url(service_name)
+		end
+
+		def endpoint
+			@endpoint
+		end
 	end
 
+end
+
+class MBService
+	extend MBMeta
+    class << self; attr_accessor :endpoint; end
+
+	#Sets up the service WSDL endpoint given a Mindbody service name
+	def self.service(service_name)
+		@endpoint = self.wsdl_url(service_name)
+	end
+
+	def self.endpoint
+		@endpoint
+	end
+	
+	
 	attr_accessor :client, :src_creds, :usr_creds
 
 	def initialize(options = {})
@@ -37,7 +68,6 @@ class MBService
         raise "No SOAP client instantiated" unless @client
 
 		raise "No SourceCredentials supplied" if !@src_creds && !options[:source_credentials]
-		
 		response = @client.request MBMeta::NS, service_symbol do
 			soap.body = 
 			{	
@@ -49,8 +79,7 @@ class MBService
 	#Allows services to be called directly on the service and rerouted to 
 	#the client 	
 	def method_missing(m_name, *args, &block)
-		options = args[0]
+		options = args[0] || {}
 		get_service m_name.to_sym, options.is_a?(Hash) ? options : {}
-
 	end
 end
