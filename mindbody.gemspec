@@ -15,7 +15,8 @@ Gem::Specification.new do |s|
   s.rubyforge_project = s.name
 
   s.add_dependency "savon", "~> 0.9.2"
-  s.files = `git ls-files`.split("\n")
+  s.add_dependency "curb", "~>0.7.15"
+  s.files = Dir.glob("lib/**/*") + Dir.glob("lib/*") + %w(LICENSE.txt)
   s.require_path = "lib"
 end
 
