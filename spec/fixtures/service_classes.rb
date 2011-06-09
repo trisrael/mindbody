@@ -1,4 +1,4 @@
-class TagService < MBService
+class TagService < Mb::Service
 	service "TagService"
 end
 
@@ -7,7 +7,7 @@ end
 class CustomTagService < TagService
 end
 
-class MailService < MBService
+class MailService < Mb::Service
 	service "MailService"
 end
 

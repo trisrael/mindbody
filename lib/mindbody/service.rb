@@ -1,7 +1,7 @@
 require 'savon'
 
-class MBService
-	extend MBMeta
+class Mb::Service
+	extend Mb::Meta
 
 	SRC_CREDS = "SourceCredentials"
     class << self; attr_accessor :endpoint; end
@@ -59,9 +59,7 @@ class MBService
 			}
 
 			request_body[src_creds_name] = @src_creds.to_hash if @src_creds
-			request_body["UserCredentials"] = @usr_creds.to_hash if @usr_creds
-
-			
+			request_body["UserCredentials"] = @usr_creds.to_hash if @usr_creds	
 
 			return request_body.deep_merge!(options)
 	end
@@ -73,7 +71,7 @@ class MBService
 		request_options = build_request(options)
 		raise "No SourceCredentials supplied" if !@src_creds && !options[SRC_CREDS] #Just checking for :source_credentials does not 
 		#check all possiblities as "SourceCredentials", 
-		response = @client.request MBMeta::NS, service_symbol do
+		response = @client.request Mb::Meta::NS, service_symbol do
 			soap.body = 
 			{	
 				"Request" => request_options

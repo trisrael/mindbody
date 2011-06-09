@@ -1,3 +1,3 @@
-class MBSaleService < MBService
+class Mb::SaleService < Mb::Service
 	service "SaleService"
 end

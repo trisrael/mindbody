@@ -1,12 +1,8 @@
-class Credentials
+class Mb::Credentials < Mb::Options
 	attr_accessor :name, :password, :ids
 
-	#A map describing how the local private instance variables should show for public services
-	def self.public_var_names (soap_names_map)
-		@@map =  soap_names_map
-	end
-	  
-	def initialize(name, password, ids)
+	#Allow for Credentials.new to be used... and set at later 
+	def initialize(name = nil, password = nil, ids = [])
 		 @name = name
 		 @password = password
 
@@ -22,7 +18,7 @@ class Credentials
 	#Return a hash ready for inclusion in a savon SOAP request, 
 	#allow instance variables to renamed dependent on a map set up in the class
 	def to_hash
-		mapper = @@map || {}
+		mapper = @nap || {}
 		 
 		{ 
 			mapper[:name] || "Name"  => @name,

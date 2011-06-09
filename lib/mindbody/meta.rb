@@ -1,4 +1,4 @@
-module MBMeta
+module Mb::Meta
 	NS = :_5 #Name for soap elements
 	WSDL_PREFIX = "http://clients.mindbodyonline.com/api/0_5/"
 	WSDL_POSTFIX = ".asmx?WSDL"

@@ -1,3 +1,3 @@
-class MBAppointmentService < MBService
+class Mb::AppointmentService < Mb::Service
 	service "AppointmentService"
 end

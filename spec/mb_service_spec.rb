@@ -1,6 +1,6 @@
 require "spec_helper.rb"
 
-describe MBService do
+describe Mb::Service do
 
 	describe "#service" do
 
@@ -18,7 +18,7 @@ describe MBService do
 		end
 
 		it "should create new instances with no options" do
-			lambda{MBService.new}.should_not raise_error
+			lambda{Mb::Service.new}.should_not raise_error
 		end
 
 		it "instance endpoint method should not be nil" do	
