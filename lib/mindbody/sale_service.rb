@@ -1,3 +1,5 @@
-class Mb::SaleService < Mb::Service
-	service "SaleService"
+module Mb
+	class SaleService < Service
+		service "SaleService"
+	end
 end

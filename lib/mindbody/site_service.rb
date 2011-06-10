@@ -1,3 +1,5 @@
-class Mb::SiteService < Mb::Service
-	service "SiteService"
+module Mb
+	class SiteService < Service
+		service "SiteService"
+	end
 end

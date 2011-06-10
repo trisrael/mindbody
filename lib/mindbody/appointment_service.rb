@@ -1,3 +1,5 @@
-class Mb::AppointmentService < Mb::Service
-	service "AppointmentService"
+module Mb
+	class AppointmentService < Service
+		service "AppointmentService"
+	end
 end

@@ -1,3 +1,5 @@
-class Mb::ClassService < Mb::Service
-	service "ClassService"
+module Mb
+	class ClassService < Service
+		service "ClassService"
+	end
 end

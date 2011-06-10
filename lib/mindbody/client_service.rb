@@ -1,3 +1,5 @@
-class Mb::ClientService < MB::Service
-	service "ClientService"
+module Mb
+	class ClientService < Service
+		service "ClientService"
+	end
 end
