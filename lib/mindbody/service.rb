@@ -71,7 +71,7 @@ module Mb
 		    raise "No SOAP client instantiated" unless @client
 
 			request_options = build_request(options)
-			throw request_options.inspect
+
 			raise "No SourceCredentials supplied" if !@src_creds || !request_options[SRC_CREDS] #Just checking for :source_credentials does not 
 			#check all possiblities as "SourceCredentials", 
 			response = @client.request Mb::Meta::NS, service_symbol do
