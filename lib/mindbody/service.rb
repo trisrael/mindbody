@@ -35,11 +35,11 @@ module Mb
 
 		#Builds the inner XML of the Mindbody SOAP call
 		def build_request(options = {})
-				throw options.keys.inspect
+
 				src_creds_name = SRC_CREDS
 
-				options  = options.dup #Don't clobber the original hash
-
+				options = options.dup #Don't clobber the original hash
+				throw options.keys.inspect
 				#NOTE: Could extend this to read WSDL document or using Savon client to tell which nodes are allowed in the request
 				#performing the same type of test against passed in variables on each and replacing with the appropriate value
 
