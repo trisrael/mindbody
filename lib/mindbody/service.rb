@@ -39,16 +39,17 @@ module Mb
 				src_creds_name = SRC_CREDS
 
 				options = options.dup #Don't clobber the original hash
-				throw options.keys.inspect
 				#NOTE: Could extend this to read WSDL document or using Savon client to tell which nodes are allowed in the request
 				#performing the same type of test against passed in variables on each and replacing with the appropriate value
+
+				final_opts = options.dup
 
 				options.keys.each do |key|
 					orig_key = key
 					new_key = orig_key.to_s.gsub("_", "").downcase
 					if (new_key == src_creds_name.downcase)
-						options[src_creds_name] = options[key] #Set "SourceCredentials" to hash referenced by similarly named
-						options.delete(orig_key)
+						final_opts[src_creds_name] = final_opts[key] #Set "SourceCredentials" to hash referenced by similarly named
+						final_opts.delete(orig_key)
 					end
 				end
 		
@@ -62,7 +63,7 @@ module Mb
 				request_body[src_creds_name] = @src_creds.to_hash if @src_creds
 				request_body["UserCredentials"] = @usr_creds.to_hash if @usr_creds	
 
-				return request_body.deep_merge!(options)
+				return request_body.deep_merge!(final_opts)
 		end
 
 		#Build a Mindbody SOAP request for the given service 
