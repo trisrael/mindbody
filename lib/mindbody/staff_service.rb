@@ -1,6 +1,6 @@
 module Mb
 	class StaffService < Service
-		service "StaffService"
+		local_document "../wsdl/staff.xml"
 	
 		def options=(arr = [])
 			@arr = arr

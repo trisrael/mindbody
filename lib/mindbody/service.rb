@@ -12,12 +12,20 @@ module Mb
 			@endpoint = self.wsdl_url(service_name)
 		end
 
+		def self.local_document(path)
+			@doc_path = path			
+		end
+
+		def local_document
+			self.class.doc_path
+		end
+
 		#Returns the endpoint (a WSDL document) that this service is using to
 		#access its methods, if a url is supplied the endpoint it updated and then returned
 		def self.endpoint(url = nil)
 			@endpoint = url if url
 			@endpoint
-		end
+		end		
 			
 		def endpoint
 			self.class.endpoint
@@ -29,8 +37,14 @@ module Mb
 			@client = nil
 			@src_creds = options[:source_credentials]
 			@usr_creds = options[:user_credentials]
-		
-			@client = Savon::Client.new endpoint
+
+			if local_document
+				@client = Savon::Client.new do
+					wsdl.document = File.expand_path( local_document , __FILE__)
+				end
+			else
+				@client = Savon::Client.new endpoint			
+			end
 		end
 
 		#Builds the inner XML of the Mindbody SOAP call
