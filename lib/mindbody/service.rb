@@ -35,7 +35,7 @@ module Mb
 
 		#Builds the inner XML of the Mindbody SOAP call
 		def build_request(options = {})
-				throw options.inspect
+				throw options.keys.inspect
 				src_creds_name = SRC_CREDS
 
 				options  = options.dup #Don't clobber the original hash
