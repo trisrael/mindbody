@@ -78,7 +78,7 @@ module Mb
 				request_body[src_creds_name] = @src_creds.to_hash if @src_creds
 				request_body["UserCredentials"] = @usr_creds.to_hash if @usr_creds	
 
-				return request_body.deep_merge!(final_opts)
+				return request_body.merge!(final_opts)
 		end
 
 		#Build a Mindbody SOAP request for the given service 
