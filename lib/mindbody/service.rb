@@ -6,6 +6,7 @@ module Mb
 
 		SRC_CREDS = "SourceCredentials"
 		class << self; attr_accessor :endpoint; end
+    class << self; attr_accessor :doc_path; end
 
 		#Sets up the service WSDL endpoint given a Mindbody service name
 		def self.service(service_name)
