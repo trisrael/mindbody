@@ -69,7 +69,7 @@ module Mb
 				end
 				
 
-				new_vals = final_opts.values.map do |item|
+				final_opts.values = final_opts.values.map do |item|
 					if item.kind_of?(Array)
 						tranformed = {}	
 						if item[0].kind_of? Integer
@@ -87,9 +87,11 @@ module Mb
 				request_body = 
 				{
 					"PageSize" => 10, 
-					"XMLDetail" => "Bare",
 					"CurrentPageIndex" => 0
 				}
+
+				request_body["XMLDetail"] = "Bare" unless final_opts['Fields']
+
 
 				request_body[src_creds_name] = @src_creds.to_hash if @src_creds
 				request_body["UserCredentials"] = @usr_creds.to_hash if @usr_creds	
