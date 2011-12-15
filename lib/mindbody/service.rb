@@ -68,20 +68,21 @@ module Mb
 					end
 				end
 				
-
-				final_opts.values = final_opts.values.map do |item|
-					if item.kind_of?(Array)
+				opts = {};
+				final_opts.each  do |key, value|
+					new_val = value
+					if value.kind_of?(Array)
 						tranformed = {}	
 						if item[0].kind_of? Integer
-							transformed[:int] = item
+							transformed[:int] = value
 						elsif item[0].kind_of? String
-							transformed[:string] = item
+							transformed[:string] = value
 						else
 							break #Don't know how to deal with it, return regular
 						end
-						return transformed
+						 new_val = transformed
 					end
-					item #Otherwise do nothing
+					opts[key] = new_val
 				end
 		
 				request_body = 
@@ -90,13 +91,13 @@ module Mb
 					"CurrentPageIndex" => 0
 				}
 
-				request_body["XMLDetail"] = "Bare" unless final_opts["Fields"]
+				request_body["XMLDetail"] = "Bare" unless opts["Fields"]
 
 
 				request_body[src_creds_name] = @src_creds.to_hash if @src_creds
 				request_body["UserCredentials"] = @usr_creds.to_hash if @usr_creds	
 
-				return request_body.merge!(final_opts)
+				return request_body.merge!(opts)
 		end
 
 		#Build a Mindbody SOAP request for the given service 
