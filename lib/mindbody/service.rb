@@ -90,7 +90,7 @@ module Mb
 					"CurrentPageIndex" => 0
 				}
 
-				request_body["XMLDetail"] = "Bare" unless final_opts['Fields']
+				request_body["XMLDetail"] = "Bare" unless final_opts["Fields"]
 
 
 				request_body[src_creds_name] = @src_creds.to_hash if @src_creds
