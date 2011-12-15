@@ -67,6 +67,22 @@ module Mb
 						final_opts.delete(orig_key)
 					end
 				end
+				
+
+				new_vals = final_opts.values.map do |item|
+					if item.kind_of?(Array)
+						tranformed = {}	
+						if item[0].kind_of? Integer
+							transformed[:int] = item
+						elsif item[0].kind_of? String
+							transformed[:string] = item
+						else
+							break #Don't know how to deal with it, return regular
+						end
+						return transformed
+					end
+					item #Otherwise do nothing
+				end
 		
 				request_body = 
 				{
