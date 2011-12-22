@@ -34,10 +34,15 @@ module Mb
 	
 		attr_accessor :client, :src_creds, :usr_creds
 
-		def initialize(options = {})
+
+		def initialize args
+			if arg.is_a? Mb::SourceCredentials
+		    	@src_creds = args
+			else	
+			#assume a hash
 			@client = nil
-			@src_creds = options[:source_credentials]
-			@usr_creds = options[:user_credentials]
+			@src_creds = args[:source_credentials]
+			@usr_creds = args[:user_credentials]
 
 			if local_document
 				@client = Savon::Client.new do
@@ -45,6 +50,7 @@ module Mb
 				end
 			else
 				@client = Savon::Client.new endpoint			
+			end
 			end
 		end
 
