@@ -6,7 +6,7 @@ module Mb
 
 		SRC_CREDS = "SourceCredentials"
 		class << self; attr_accessor :endpoint; end
-    class << self; attr_accessor :doc_path; end
+	    class << self; attr_accessor :doc_path; end
 
 		#Sets up the service WSDL endpoint given a Mindbody service name
 		def self.service(service_name)
@@ -36,7 +36,7 @@ module Mb
 
 
 		def initialize args
-			if arg.is_a? Mb::SourceCredentials
+			if args.is_a? Mb::SourceCredentials
 		    	@src_creds = args
 			else	
 			#assume a hash
@@ -119,19 +119,21 @@ module Mb
 				{	
 					"Request" => request_options
 				}
-			
+		    end	
 			if unwrap_bool
 				#Unwrap response to hash array underneath)
 			    plural = service_symbol.to_s.gsub("get_", "")
-				singular =plural[0..-1] #Remove last
+				singular =plural[0..-2] #Remove last
 			   	r = response.to_hash
-				basify = lambda {|enda| (service_symbol.to_s + "_" + enda).to_sym}  
-				r = r[basify('response')][basify('result'][plural.to_sym][singular.to_sym]
+				basify = lambda {|enda| (service_symbol.to_s + "_" + enda).to_sym }  
+				r = r[basify.call('response')][basify.call('result')]
+				return [] if r[:result_count] == "0"
+				r = r[plural.to_sym][singular.to_sym]
+
 				return r	 
 			end
 			
 			response
-			end
 		end
 	
 		def method_missing(method_id, *arguments, &block)
