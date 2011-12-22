@@ -43,6 +43,7 @@ module Mb
 			@client = nil
 			@src_creds = args[:source_credentials]
 			@usr_creds = args[:user_credentials]
+			end
 
 			if local_document
 				@client = Savon::Client.new do
@@ -50,7 +51,6 @@ module Mb
 				end
 			else
 				@client = Savon::Client.new endpoint			
-			end
 			end
 		end
 
@@ -107,7 +107,7 @@ module Mb
 		end
 
 		#Build a Mindbody SOAP request for the given service 
-		def get_service(service_symbol, options)
+		def get_service(service_symbol, options, unwrap_bool)
 		    raise "No SOAP client instantiated" unless @client
 
 			request_options = build_request(options)
@@ -119,13 +119,26 @@ module Mb
 				{	
 					"Request" => request_options
 				}
+			
+			if unwrap_bool
+				#Unwrap response to hash array underneath)
+			    plural = service_symbol.to_s.gsub("get_", "")
+				singular =plural[0..-1] #Remove last
+			   	r = response.to_hash
+				basify = lambda {|enda| (service_symbol.to_s + "_" + enda).to_sym}  
+				r = r[basify('response')][basify('result'][plural.to_sym][singular.to_sym]
+				return r	 
+			end
+			
+			response
 			end
 		end
 	
 		def method_missing(method_id, *arguments, &block)
 	  		if method_id.to_s =~ /^get_\w+/
 				options = arguments[0] || {}
-				get_service method_id.to_sym, options.is_a?(Hash) ? options : {}			
+			    non_mb_options = arguments[1] || {}
+				get_service method_id.to_sym, options.is_a?(Hash) ? options : {}, non_mb_options[:unwrap]			
 			else
 				super
 			end	
